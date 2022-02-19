@@ -17,11 +17,16 @@ class CalculatorViewController: UIViewController {
     
     var selectedTip = 0.0
     var numberOfPeopleToSlitTheBill = 2.0
+    var splitedBill = 0.0
     
     @IBAction func tipChanged(_ sender: UIButton) {
+        // Dismiss keyboard from UI
+        billTextField.endEditing(true)
+        
         zeroPctButton.isSelected = false
         tenPctButton.isSelected = false
         twentyPctButton.isSelected = false
+        
         sender.isSelected = true
         
         if let buttonTitle = sender.titleLabel?.text {
@@ -41,6 +46,11 @@ class CalculatorViewController: UIViewController {
     }
     
     @IBAction func calculatePressed(_ sender: UIButton) {
+        if let billTextFieldValue = billTextField.text {
+            if let bill = Double(billTextFieldValue) {
+                splitedBill = bill * (selectedTip + 1) / numberOfPeopleToSlitTheBill
+            }
+        }
     }
 }
 
