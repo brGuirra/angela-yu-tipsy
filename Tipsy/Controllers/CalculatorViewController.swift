@@ -15,7 +15,23 @@ class CalculatorViewController: UIViewController {
     @IBOutlet var twentyPctButton: UIButton!
     @IBOutlet var splitNumberLabel: UILabel!
     
+    var selectedTip = 0.0
+    
     @IBAction func tipChanged(_ sender: UIButton) {
+        zeroPctButton.isSelected = false
+        tenPctButton.isSelected = false
+        twentyPctButton.isSelected = false
+        sender.isSelected = true
+        
+        if let buttonTitle = sender.titleLabel?.text {
+            // Remove "%"from the button title
+            let formatedButtonTitle = buttonTitle.dropLast()
+            
+            let formatedButtonTitleAsNumber = Double(formatedButtonTitle)!
+            
+            selectedTip = formatedButtonTitleAsNumber / 100.0
+        }
+        
     }
     
     @IBAction func stepperValueChanged(_ sender: UIStepper) {
