@@ -41,6 +41,9 @@ class CalculatorViewController: UIViewController {
     }
     
     @IBAction func stepperValueChanged(_ sender: UIStepper) {
+        // Dismiss keyboard from UI
+        billTextField.endEditing(true)
+        
         splitNumberLabel.text = String(format: "%.0f", sender.value)
         numberOfPeopleToSlitTheBill = sender.value
     }
@@ -49,7 +52,20 @@ class CalculatorViewController: UIViewController {
         if let billTextFieldValue = billTextField.text {
             if let bill = Double(billTextFieldValue) {
                 splitedBill = bill * (selectedTip + 1) / numberOfPeopleToSlitTheBill
+                
+                performSegue(withIdentifier: "goToResult", sender: self)
             }
+        }
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "goToResult" {
+            let destinationVC = segue.destination as! ResultsViewController
+            
+            let tip = selectedTip * 100.0
+            destinationVC.tipPercentage = String(format: "%.0f", tip) + "%"
+            destinationVC.calculatedResult = String(format: "%.2f", splitedBill)
+            destinationVC.numberOfPeople = String(format: "%.0f", numberOfPeopleToSlitTheBill)
         }
     }
 }
