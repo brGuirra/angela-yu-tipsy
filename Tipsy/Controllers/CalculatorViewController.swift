@@ -15,9 +15,8 @@ class CalculatorViewController: UIViewController {
     @IBOutlet var twentyPctButton: UIButton!
     @IBOutlet var splitNumberLabel: UILabel!
     
-    var selectedTip = 0.0
-    var numberOfPeopleToSlitTheBill = 2.0
-    var splitedBill = 0.0
+    var appBrain = AppBrain()
+    var selectedButton: UIButton?
     
     @IBAction func tipChanged(_ sender: UIButton) {
         // Dismiss keyboard from UI
@@ -29,15 +28,7 @@ class CalculatorViewController: UIViewController {
         
         sender.isSelected = true
         
-        if let buttonTitle = sender.titleLabel?.text {
-            // Remove "%"from the button title
-            let formatedButtonTitle = buttonTitle.dropLast()
-            
-            let formatedButtonTitleAsNumber = Double(formatedButtonTitle)!
-            
-            selectedTip = formatedButtonTitleAsNumber / 100.0
-        }
-        
+        selectedButton = sender
     }
     
     @IBAction func stepperValueChanged(_ sender: UIStepper) {
@@ -45,16 +36,18 @@ class CalculatorViewController: UIViewController {
         billTextField.endEditing(true)
         
         splitNumberLabel.text = String(format: "%.0f", sender.value)
-        numberOfPeopleToSlitTheBill = sender.value
     }
     
     @IBAction func calculatePressed(_ sender: UIButton) {
-        if let billTextFieldValue = billTextField.text {
-            if let bill = Double(billTextFieldValue) {
-                splitedBill = bill * (selectedTip + 1) / numberOfPeopleToSlitTheBill
-                
-                performSegue(withIdentifier: "goToResult", sender: self)
-            }
+        appBrain.calculateBill(bill: billTextField.text, numberOfPeople: splitNumberLabel.text, tip: selectedButton?.currentTitle)
+        
+        if appBrain.bill != nil {
+            performSegue(withIdentifier: "goToResult", sender: self)
+        } else {
+            let ac = UIAlertController(title: "Error", message: "An error occurred while calculating the bill", preferredStyle: .alert
+            )
+            ac.addAction(UIAlertAction(title: "Try again", style: .cancel))
+            present(ac, animated: true)
         }
     }
     
@@ -62,10 +55,9 @@ class CalculatorViewController: UIViewController {
         if segue.identifier == "goToResult" {
             let destinationVC = segue.destination as! ResultsViewController
             
-            let tip = selectedTip * 100.0
-            destinationVC.tipPercentage = String(format: "%.0f", tip) + "%"
-            destinationVC.calculatedResult = String(format: "%.2f", splitedBill)
-            destinationVC.numberOfPeople = String(format: "%.0f", numberOfPeopleToSlitTheBill)
+            destinationVC.tipPercentage = appBrain.getTipPercentage()
+            destinationVC.calculatedResult = appBrain.getBillValue()
+            destinationVC.numberOfPeople = appBrain.getNumberOfPeople()
         }
     }
 }
