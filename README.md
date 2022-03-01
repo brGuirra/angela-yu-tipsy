@@ -37,6 +37,6 @@ I could practice the concepts learned previously on the course, like:
 
 ## ⌨ How to use it
 
-Download this repository, open it in Xcode, select and iPhone
+Download this repository, open it in Xcode, select an iPhone
 simulator and press command + R to run the app.
 
